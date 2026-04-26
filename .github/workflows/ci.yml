@@ -30,7 +30,7 @@ jobs:
         run: safety check
 
       - name: Запуск тестів
-        run: make test
+        PYTHONPATH=. pytest
 
       - name: Запуск doctest
         run: make doctest
