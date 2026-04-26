@@ -9,36 +9,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Отримати код
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Встановити Python
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
-      - name: Оновити pip
-        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Встановити залежності
-        run: pip install -r requirements.txt
+      - name: Lint (flake8)
+        run: flake8 .
 
-      - name: Встановити safety
-        run: pip install safety
-
-      - name: Перевірка безпеки залежностей
-        run: safety check
-
-      - name: Запуск тестів
-        env:
-          PYTHONPATH: .
-        run: pytest
-
-      - name: Запуск doctest
-        run: make doctest
-
-      - name: Перевірка стилю (flake8)
-        run: make lint
-
-      - name: Перевірка форматування (black)
+      - name: Format check (black)
         run: black --check .
+
+      - name: Run tests
+        run: PYTHONPATH=. pytest
+
+      - name: Run doctests
+        run: python -m doctest -v app/main.py
+
+      - name: Security check (safety)
+        run: |
+          pip install safety
+          safety check
