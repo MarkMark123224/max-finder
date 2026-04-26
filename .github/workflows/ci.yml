@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Отримати код
+        uses: actions/checkout@v3
+
+      - name: Встановити Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Оновити pip
+        run: python -m pip install --upgrade pip
+
+      - name: Встановити залежності
+        run: pip install -r requirements.txt
+
+      - name: Встановити safety
+        run: pip install safety
+
+      - name: Перевірка безпеки залежностей
+        run: safety check
+
+      - name: Запуск тестів
+        run: make test
+
+      - name: Запуск doctest
+        run: make doctest
+
+      - name: Перевірка стилю (flake8)
+        run: make lint
+
+      - name: Перевірка форматування (black)
+        run: black --check .
